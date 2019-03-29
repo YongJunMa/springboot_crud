@@ -32,7 +32,7 @@ public class UserController {
 	
 	@GetMapping("/listByPage/{start}")
 	public Page4Navigator<User> findByPage(@PathVariable("start") Integer start) {
-		return userService.findByPage(start, 5, 5);
+		return userService.findByPage(start-1, 5, 5);
 	}
 	
 	@PostMapping("/add")

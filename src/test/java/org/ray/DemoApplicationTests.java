@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ray.dao.UserDao;
 import org.ray.pojo.User;
+import org.ray.service.UserService;
+import org.ray.util.Page4Navigator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class DemoApplicationTests {
 	@Autowired
 	private UserDao userDao;
+	@Autowired
+	private UserService userService;
+	
+	@Test
+	public void testP() {
+		Page4Navigator<User> page4Navigator = userService.findByPage(0, 5, 5);
+		List<User> users = page4Navigator.getContent();
+		for (User user : users) {
+			System.out.println(user);
+		}
+	}
 	
 	@Test
 	public void testSelect() {
