@@ -233,7 +233,7 @@
 								<!-- 上一页，在当前页码基础上减1 -->
 								<a href="#" @click="jump(pagination.number-1)">‹</a>
 							</li>
-							<li v-for="i in pagination.navigatepageNums">
+							<li v-for="i in pagination.navigatepageNums" :class="{active:pagination.number==i-1}">
 								<!-- 
 									跳转到第i页
 									i的显示为1~N，从1开始，但是服务端需要的页码从0开始，所有传递的页码值要减1
