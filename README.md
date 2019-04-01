@@ -1,6 +1,6 @@
 # 项目概述
 
-这是一个Springboot项目，实现了单表的CRUD（包括分页查询）。
+这是一个Springboot项目，实现了单表的CRUD（包括分页查询），完全的前后端分离。
 
 # 使用的技术
 
@@ -9,9 +9,8 @@
 > 3. jquery
 > 4. axios
 > 5. RESTful
-> 6. Thymeleaf
-> 7. Springboot
-> 8. JPA
+> 6. Springboot
+> 7. JPA
 
 
 
