@@ -32,7 +32,12 @@ public class UserController {
 	
 	@GetMapping("/listByPage/{start}")
 	public Page4Navigator<User> findByPage(@PathVariable("start") Integer start) {
-		return userService.findByPage(start-1, 5, 5);
+		/*
+		 *   防止出现页码为负数的起始页
+		 *   首页从0开始
+		*/
+		start = start < 0 ? 0 : start;
+		return userService.findByPage(start, 5, 5);
 	}
 	
 	@PostMapping("/add")

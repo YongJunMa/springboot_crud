@@ -73,4 +73,13 @@ public class DemoApplicationTests {
 		Page<User> page = userDao.findAll(pageable);
 		System.out.println(page.getContent());
 	}
+	
+	@Test
+	public void testPage1() {
+		Page4Navigator<User> page = userService.findByPage(0, 5, 5);
+		List<User> list = page.getContent();
+		for (User user : list) {
+			System.out.println(user);
+		}
+	}
 }

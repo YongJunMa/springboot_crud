@@ -25,37 +25,42 @@
 				var data4vue = {
 					pagination:{},
 					users:[],
-					userAdd:{
-						name:"",
-						age:"",
-						gender:""
-					},
-					userChg:{
-						id:"",
-						name:"",
-						age:"",
-						gender:""
-					}
+					userAdd:{},
+					userChg:{}
 				};
 				var vue = new Vue({
 					el:"#main",
 					data:data4vue,
 					mounted:function(){ //mounted　表示这个 Vue 对象加载成功了
-			            this.findByPage(1);
+						//首页从0开始
+			            this.findByPage(0);
 			        },
 			        methods: {
-			        	list:function() {
-			        		var url="/list";
-			        		axios.get(url).then(function(response) {
-			        			vue.users = response.data;
-			        		});
-			        	},
+			        	//根据ID查询，在更新时使用
 			        	findById:function(id) {
 			        		var url="/list/" + id;
 			        		axios.get(url).then(function(response) {
 			        			vue.userChg = response.data;
 			        		});
 			        	},
+			        	//分页查询之前的判断---防止额外的请求
+			        	jump:function(start) {
+			        		//如果请求当前页，不用跳转
+			        		if(start == this.pagination.number) {
+			        			return;
+			        		}
+			        		//在第一页时，单击上一页，会导致start为负值，这种情况下，不用跳转
+			        		if(start < 0) {
+			        			return;
+			        		}
+			        		//在最后一页时，单击下一页，会导致start超过总页数，这种情况下，不用跳转
+			        		if(start >= this.pagination.totalPages) {
+			        			return;
+			        		}
+			        		//跳转到相应页面
+			        		this.findByPage(start);
+			        	},
+			        	//分页查询
 			        	findByPage:function(start) {
 			        		var url="/listByPage/" + start;
 							axios.get(url).then(function(response) {
@@ -63,38 +68,35 @@
 								vue.users = response.data.content;
 							});
 			        	},
+			        	//添加一条数据
 			        	add:function() {
 			        		var url="/add";
 			        		axios.post(url, vue.userAdd).then(function(response) {
 			        			alert("添加成功！");
-			        			vue.userAdd = {
-			    					name:"",
-			    					age:"",
-			    					gender:""
-			    				};
+			        			vue.userAdd = {};
 			        			$('#addModal').modal('hide');
-			        			vue.findByPage(1);
+			        			//跳转到首页
+			        			vue.findByPage(0);
 			        		});
 			        	},
+			        	//删除一条数据
 			        	del:function(id) {
 			        		var url="/del/" + id;
 			        		axios.delete(url).then(function(response) {
 			        			alert("删除成功！");
-			        			vue.findByPage(1);
+			        			//跳转到当前页
+			        			vue.findByPage(vue.pagination.number);
 			        		});
 			        	},
+			        	//修改一条数据
 			        	chg:function(){
 			        		var url="/chg";
 			        		axios.put(url, vue.userChg).then(function(response) {
 			        			alert("修改成功");
-			        			vue.userChg = {
-			        				id:"",
-			        				name:"",
-				    				age:"",
-				    				gender:""	
-			        			}
+			        			vue.userChg = {}
 			        			$('#chgModal').modal('hide');
-			        			vue.findByPage(1);
+			        			//跳转到当前页
+			        			vue.findByPage(vue.pagination.number);
 			        		});
 			        	}
 			        }
@@ -224,19 +226,27 @@
 					<nav>
 						<ul class="pagination">
 							<li :class="{disabled:pagination.first}">
-								<a @click="findByPage(1)">&laquo;</a>
+								<!-- 首页，跳转到第0页   -->
+								<a href="#" @click="jump(0)">&laquo;</a>
 							</li>
 							<li :class="{disabled:!pagination.hasPrevious}">
-								<a @click="findByPage(pagination.number-1)">‹</a>
+								<!-- 上一页，在当前页码基础上减1 -->
+								<a href="#" @click="jump(pagination.number-1)">‹</a>
 							</li>
 							<li v-for="i in pagination.navigatepageNums">
-								<a @click="findByPage(i)" >{{i}}</a>
+								<!-- 
+									跳转到第i页
+									i的显示为1~N，从1开始，但是服务端需要的页码从0开始，所有传递的页码值要减1
+								 -->
+								<a href="#" @click="jump(i-1)" >{{i}}</a>
 							</li>
 							<li :class="{disabled:!pagination.hasNext}">
-								<a @click="findByPage(pagination.number+1)">›</a>
+								<!-- 下一页，在当前页码基础上加1 -->
+								<a href="#" @click="jump(pagination.number+1)">›</a>
 							</li>
 							<li :class="{disabled:pagination.last}">
-								<a @click="findByPage(pagination.totalPages)">&raquo;</a>
+								<!-- 最后一页，服务端需要的页码从0开始，所有传递的页码值要在总页数基础上减1 -->
+								<a href="#" @click="jump(pagination.totalPages-1)">&raquo;</a>
 							</li>
 						</ul>
 					</nav>
